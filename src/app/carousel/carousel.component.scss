@@ -1,0 +1,77 @@
+.carousel {
+  width: fit-content;
+  margin: 0 auto;
+
+  .carousel-inner {
+    width: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    overflow: hidden;
+
+    .carousel-item {
+      width: 220px;
+      padding: 10px;
+      position: relative;
+    }
+  }
+
+  .carousel-controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+
+    .carousel-control {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #fff;
+      border: 1px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .carousel-control-prev {
+      left: -30px;
+    }
+    .carousel-control-next {
+      right: -30px;
+    }
+  }
+}
+
+// Animations
+.slide-left {
+  -webkit-animation: .5s slide-left ease-in-out;
+          animation: .5s slide-left ease-in-out;
+}
+
+.slide-right {
+  -webkit-animation: .5s slide-right ease-in-out;
+          animation: .5s slide-right ease-in-out;
+}
+
+// Go to next slide
+@keyframes slide-left {
+  from {
+    left: 0;
+  }
+  to {
+    left: 240px;
+  }
+}
+
+// Go to previous slide
+@keyframes slide-right {
+  from {
+    right: 0;
+  }
+  to {
+    right: 240px;
+  }
+}

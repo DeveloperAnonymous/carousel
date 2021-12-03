@@ -1,0 +1,34 @@
+<div class="carousel">
+  <!-- Sliding carousel, only show currentSlide -->
+  <div id="carousel-slide" class="carousel-inner" *ngIf="currentSlide">
+    <div class="carousel-item">
+      <img [src]="previousSlide?.image" width="220px" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>{{ previousSlide?.title }}</h5>
+        <p>{{ previousSlide?.description }}</p>
+      </div>
+    </div>
+
+    <div class="carousel-item">
+      <img [src]="currentSlide.image" width="220px" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>{{ currentSlide.title }}</h5>
+        <p>{{ currentSlide.description }}</p>
+      </div>
+    </div>
+
+    <div class="carousel-item">
+      <img [src]="nextSlide?.image" width="220px" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>{{ nextSlide?.title }}</h5>
+        <p>{{ nextSlide?.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide controls -->
+  <div class="carousel-controls">
+    <button class="carousel-control carousel-control-prev" [disabled]="!this.canSlide() || this.isAnimating" (click)="previous()"><fa-icon [icon]="faChevronLeft"></fa-icon></button>
+    <button class="carousel-control carousel-control-next" [disabled]="!this.canSlide() || this.isAnimating" (click)="next()"><fa-icon [icon]="faChevronRight"></fa-icon></button>
+  </div>
+</div>
