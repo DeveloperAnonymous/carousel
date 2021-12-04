@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ɵɵsetComponentScope } from '@angular/core';
 import { CarouselItem } from '../models/CarouselItem';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -10,9 +10,9 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 export class CarouselComponent implements OnInit {
   @Input() slides: CarouselItem[] = [];
 
-  previousSlide: CarouselItem | null = null;
-  currentSlide: CarouselItem | null = null;
-  nextSlide: CarouselItem | null = null;
+  previousSlides: CarouselItem[] | null = null;
+  currentSlides: CarouselItem[] | null = null;
+  nextSlides: CarouselItem[] | null = null;
 
   previousElement: HTMLElement | null = null;
   currentElement: HTMLElement | null = null;
@@ -23,41 +23,59 @@ export class CarouselComponent implements OnInit {
   faChevronLeft = faChevronLeft;
   faChevronRight = faChevronRight;
 
-  canSlide = () => this.slides.length >= 2;
+  private SLIDES_PER_PAGE = 4;
+
+  canSlide = () => this.slides.length >= this.SLIDES_PER_PAGE;
 
   ngOnInit(): void {
-    this.currentSlide = this.slides[0];
+    this.currentSlides = this.slides.slice(0, Math.min(this.SLIDES_PER_PAGE, this.slides.length));
 
-    if (this.slides.length > 1) {
-      this.previousSlide = this.slides[1];
-      this.nextSlide = this.slides[1];
+    if (this.canSlide()) {
+      this.nextSlides = this.slides.slice(Math.min(3, this.slides.length));
     }
 
-    if (this.slides.length > 2) {
-      this.previousSlide = this.slides[this.slides.length - 1];
+    if (this.canSlide() && this.currentSlides.length < this.SLIDES_PER_PAGE * 2) {
+      const diff = (this.SLIDES_PER_PAGE * 2) - this.currentSlides.length;
+      this.nextSlides = this.slides.slice(this.SLIDES_PER_PAGE)
+      this.nextSlides = this.nextSlides.concat(this.currentSlides.slice(0, diff));
+      this.previousSlides = this.nextSlides.slice();
+    }
+
+    if (this.SLIDES_PER_PAGE * 3 <= this.slides.length) {
+      this.previousSlides = this.slides.slice(-this.SLIDES_PER_PAGE);
+      this.nextSlides = this.slides.slice(this.SLIDES_PER_PAGE, (this.SLIDES_PER_PAGE * 2));
     }
   }
 
   private updateNext(): void {
-    if (this.nextSlide) {
-      this.previousSlide = this.currentSlide;
-      this.currentSlide = this.nextSlide;
-      this.nextSlide = this.slides[this.slides.indexOf(this.nextSlide) + 1];
+    if (this.nextSlides) {
+      this.previousSlides = this.currentSlides;
+      this.currentSlides = this.nextSlides;
 
-      if (!this.nextSlide) {
-        this.nextSlide = this.slides[0];
+      const lastNextSlide = this.nextSlides.slice(-1)[0];
+      const nextSlideIndex = this.slides.indexOf(lastNextSlide) + 1;
+      const possibleNextSlides = this.slides.slice(nextSlideIndex, Math.min(nextSlideIndex + this.SLIDES_PER_PAGE, this.slides.length));
+
+      this.nextSlides = possibleNextSlides;
+      if (possibleNextSlides.length < this.SLIDES_PER_PAGE) {
+        this.nextSlides = possibleNextSlides.concat(this.slides.slice(0, this.SLIDES_PER_PAGE - possibleNextSlides.length));
       }
     }
   }
 
   updatePrevious(): void {
-    if (this.previousSlide) {
-      this.nextSlide = this.currentSlide;
-      this.currentSlide = this.previousSlide;
-      this.previousSlide = this.slides[this.slides.indexOf(this.previousSlide) - 1];
+    if (this.previousSlides) {
+      this.nextSlides = this.currentSlides;
+      this.currentSlides = this.previousSlides;
 
-      if (!this.previousSlide) {
-        this.previousSlide = this.slides[this.slides.length - 1];
+      const firstPreviousSlide = this.previousSlides[0];
+      const previousSlideIndex = this.slides.indexOf(firstPreviousSlide);
+      const possiblePreviousSlides = this.slides.slice(Math.max(previousSlideIndex - this.SLIDES_PER_PAGE, 0), previousSlideIndex);
+
+      this.previousSlides = possiblePreviousSlides;
+      if (possiblePreviousSlides.length < this.SLIDES_PER_PAGE) {
+        const missingSlides = this.SLIDES_PER_PAGE - possiblePreviousSlides.length;
+        this.previousSlides = this.slides.slice(-missingSlides).concat(possiblePreviousSlides);
       }
     }
   }
@@ -68,7 +86,7 @@ export class CarouselComponent implements OnInit {
     }
     this.isAnimating = true;
 
-    if (this.previousSlide == null || this.currentSlide == null || this.nextSlide == null) {
+    if (this.previousSlides == null || this.currentSlides == null || this.nextSlides == null) {
       return;
     }
 
@@ -77,7 +95,7 @@ export class CarouselComponent implements OnInit {
       return;
     }
 
-    const elems: HTMLCollectionOf<Element> = slideElement.getElementsByClassName('carousel-item');
+    const elems: HTMLCollectionOf<Element> = slideElement.getElementsByClassName('carousel-items');
     if (elems.length == 0) {
       return;
     }
@@ -111,7 +129,7 @@ export class CarouselComponent implements OnInit {
     }
     this.isAnimating = true;
 
-    if (this.previousSlide == null || this.currentSlide == null || this.nextSlide == null) {
+    if (this.previousSlides == null || this.currentSlides == null || this.nextSlides == null) {
       return;
     }
 
@@ -120,7 +138,7 @@ export class CarouselComponent implements OnInit {
       return;
     }
 
-    const elems: HTMLCollectionOf<Element> = slideElement.getElementsByClassName('carousel-item');
+    const elems: HTMLCollectionOf<Element> = slideElement.getElementsByClassName('carousel-items');
     if (elems.length == 0) {
       return;
     }

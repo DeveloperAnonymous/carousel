@@ -1,13 +1,8 @@
 export class CarouselItem {
-    id: number;
-    title: string;
-    description: string;
-    image: string;
-
-    constructor(id: number, title: string, description: string, image: string) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.image = image;
-    }
+  constructor(
+    public readonly id: number,
+    public readonly title: string,
+    public readonly description: string,
+    public readonly image: string
+  ) {}
 }
